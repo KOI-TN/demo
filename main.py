@@ -16,18 +16,18 @@ if "--selftest" in sys.argv:
 
 import pygame
 
-# ----------------------------------------------------------------------------
+#
 # Constants
-# ----------------------------------------------------------------------------
+
 FW, FH = 480, 660            # playfield size
 WIN_W, WIN_H = 760, 700
-FX, FY = 20, 20              # playfield position in window
+FX, FY = 20, 20              # playfield position
 FPS = 60
 TAU = math.tau
 
 PLAYER_SPEED = 4.4
 PLAYER_FOCUS = 1.9
-HIT_R = 2.0                  # player hitbox radius (tiny!)
+HIT_R = 2.0                  # player hitbox radius
 GRAZE_R = 15.0               # graze radius
 MAX_BULLETS = 3000
 
@@ -81,9 +81,8 @@ class Bullet:
         self.gz = False
 
 
-# ----------------------------------------------------------------------------
-# Boss patterns  (g = Game, t = frames since the pattern began)
-# ----------------------------------------------------------------------------
+
+# Boss patterns
 def pat_opening(g, t):
     b = g.boss
     b.tx, b.ty = FW / 2 + math.sin(t * 0.012) * 120, 115
@@ -98,7 +97,6 @@ def pat_opening(g, t):
 
 
 def pat_spiral(g, t):
-    """Spell 1: two counter-rotating five-arm spirals + slow aimed big shots."""
     b = g.boss
     b.tx, b.ty = FW / 2, 125
     if t % 3 == 0:
@@ -116,7 +114,6 @@ def pat_spiral(g, t):
 
 
 def pat_curve(g, t):
-    """Spell 2: rings whose bullets curve left/right, forming a swirling lattice."""
     b = g.boss
     b.tx, b.ty = FW / 2 + math.sin(t * 0.015) * 140, 130
     if t % 10 == 0:
@@ -132,7 +129,6 @@ def pat_curve(g, t):
 
 
 def pat_final(g, t):
-    """Spell 3: petal arms + layered decelerating rings + aimed needles."""
     b = g.boss
     b.tx = FW / 2 + math.sin(t * 0.011) * 110
     b.ty = 130 + math.sin(t * 0.022) * 30
@@ -176,9 +172,8 @@ class Inp:
         self.shoot = self.focus = self.bomb = False
 
 
-# ----------------------------------------------------------------------------
+
 # Game
-# ----------------------------------------------------------------------------
 class Game:
     def __init__(self, screen):
         self.screen = screen
@@ -194,7 +189,7 @@ class Game:
         self.state = "title"
         self.reset()
 
-    # ---- setup ----------------------------------------------------------
+    #setup
     def reset(self):
         self.score = 0
         self.graze = 0
@@ -227,7 +222,7 @@ class Game:
         if self.state != "play" and key in (pygame.K_z, pygame.K_RETURN):
             self.start()
 
-    # ---- helpers ----------------------------------------------------------
+    # helps
     def fire(self, x, y, a, s, col="red", size="s", da=0.0, ds=0.0, fx=0):
         if len(self.bullets) < MAX_BULLETS:
             self.bullets.append(Bullet(x, y, a, s, col, size, da, ds, fx))
@@ -245,7 +240,7 @@ class Game:
         self.phase_graze += n
         self.gz_timer = 45
 
-    # ---- phases -----------------------------------------------------------
+    #phases
     def start_phase(self, i):
         if i >= len(PHASES):
             self.score += self.lives * 10000
@@ -277,7 +272,7 @@ class Game:
         self.bullets.clear()
         self.trans = 100
 
-    # ---- per-frame update -------------------------------------------------
+    # frame updating
     def update(self, inp):
         self.t_all += 1
         for s in self.stars:
@@ -428,7 +423,7 @@ class Game:
         self.inv = 150
         self.px, self.py = FW / 2, FH - 60
 
-    # ---- drawing ----------------------------------------------------------
+    #drawing
     def text(self, surf, s, font, color, pos, anchor="left"):
         img = font.render(s, True, color)
         r = img.get_rect()
@@ -479,11 +474,11 @@ class Game:
             pygame.draw.circle(f, (170, 80, 220), (bx, by), 17)
             pygame.draw.circle(f, (255, 240, 255), (bx, by), 10)
 
-        # --- player shots
+        #player shots
         for p in self.pbul:
             f.blit(PBUL_SPR, (int(p[0]) - 3, int(p[1]) - 8))
 
-        # --- bomb ring
+        #bomb ring
         if self.bomb_t > 0:
             k = 1 - self.bomb_t / 45
             pygame.draw.circle(f, (255, 255, 160), (int(self.px), int(self.py)),
@@ -491,13 +486,13 @@ class Game:
             pygame.draw.circle(f, (160, 220, 255), (int(self.px), int(self.py)),
                                int(10 + k * 300), 3)
 
-        # --- bullets
+        #bullets
         blit = f.blit
         for bl in self.bullets:
             o = bl.off
             blit(bl.spr, (int(bl.x) - o, int(bl.y) - o))
 
-        # --- player
+        #player
         px, py = int(self.px), int(self.py)
         if self.inv <= 0 or (self.inv // 4) % 2 == 0:
             pygame.draw.polygon(f, (120, 200, 255), [(px, py - 13), (px - 9, py + 9), (px, py + 4), (px + 9, py + 9)])
@@ -507,7 +502,7 @@ class Game:
         pygame.draw.circle(f, (255, 255, 255), (px, py), 3)
         pygame.draw.circle(f, (255, 50, 50), (px, py), 2)
 
-        # --- boss HP bar / timer / spell name
+        #boss HP bar, timer, spell name
         if self.trans <= 0 and self.phase >= 0:
             ratio = (self.pt / 60) if self.pt < 60 else max(0.0, self.boss_hp / self.boss_max)
             ratio = min(1.0, ratio)
@@ -565,10 +560,10 @@ class Game:
         self.text(s, "Bullets %d" % len(self.bullets), self.f_small, (120, 125, 170), (x, 640))
 
 
-# ----------------------------------------------------------------------------
-# Main loop / self-test
-# ----------------------------------------------------------------------------
-IS_WEB = sys.platform == "emscripten"   # running in the browser via pygbag
+
+#loop, self-test
+
+IS_WEB = sys.platform == "emscripten"   # running in the browser
 
 
 async def main(max_frames=None):
@@ -608,7 +603,7 @@ async def main(max_frames=None):
         g.update(inp)
         g.draw()
         clock.tick(FPS)
-        await asyncio.sleep(0)      # <- required for pygbag: yield to the browser
+        await asyncio.sleep(0)      #yield to the browser
 
 
 def selftest():
@@ -617,7 +612,7 @@ def selftest():
     screen = pygame.display.set_mode((WIN_W, WIN_H))
     init_sprites()
 
-    # 1) invincible bot shoots the boss through every phase
+    #invincible bot shoots the boss
     g = Game(screen)
     g.start()
     g.god = True
@@ -646,7 +641,7 @@ def selftest():
     print("[god bot] max bullets=%d  avg update=%.2fms  avg draw=%.2fms"
           % (maxb, tu / frames * 1000, td / frames * 1000))
 
-    # 2) mortal bot flails around: hits, bombs, game over must work
+    #hits, bombs, game over must work
     random.seed(1)
     g = Game(screen)
     g.start()
@@ -665,7 +660,7 @@ def selftest():
         frames += 1
     print("[mortal bot] state=%s frames=%d lives=%d bombs=%d graze=%d score=%d"
           % (g.state, frames, g.lives, g.bombs, g.graze, g.score))
-    # 3) the real async main loop: inject "Z" to leave the title screen, run 300 frames
+    #Z to leave the title screen, run 300 frames
     pygame.event.clear()
     pygame.event.post(pygame.event.Event(pygame.KEYDOWN, key=pygame.K_z))
     asyncio.run(main(max_frames=300))
