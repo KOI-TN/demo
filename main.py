@@ -29,7 +29,7 @@ PLAYER_SPEED = 4.4
 PLAYER_FOCUS = 1.9
 HIT_R = 2.0                  # player hitbox radius
 GRAZE_R = 15.0               # graze radius
-MAX_BULLETS = 3000
+MAX_BULLETS = 1500
 
 COLORS = {
     "red": (255, 70, 70),
@@ -64,11 +64,10 @@ def init_sprites():
     PBUL_SPR = p.convert_alpha()
 
 
-# ----------------------------------------------------------------------------
+
 # Bullets
-# ----------------------------------------------------------------------------
 class Bullet:
-    """a = angle, s = speed. For `fx` frames, da (turn rate) and ds (accel) apply."""
+    """a = angle, s = speed. For `fx` frames, da (turn rate) and ds apply."""
     __slots__ = ("x", "y", "vx", "vy", "a", "s", "da", "ds", "fx",
                  "spr", "off", "hs", "gs", "gz")
 
@@ -438,7 +437,7 @@ class Game:
             pygame.draw.rect(f, (c, c, c + 30), (int(x), int(y), sz, sz))
 
         if self.state == "title":
-            self.text(f, "STAR VEIL", self.f_big, (255, 230, 120), (FW // 2, 200), "center")
+            self.text(f, "BULLET", self.f_big, (255, 230, 120), (FW // 2, 200), "center")
             self.text(f, "a tiny bullet hell", self.f_mid, (170, 190, 255), (FW // 2, 245), "center")
             lines = ["Arrows / WASD  move", "Shift  focus (slow, shows hitbox)",
                      "Z  shoot (hold)      X  bomb",
@@ -527,7 +526,7 @@ class Game:
         if self.state == "gameover":
             self.text(f, "GAME OVER", self.f_big, (255, 90, 90), (FW // 2, 270), "center")
             self.text(f, "Score %d" % self.score, self.f_mid, (255, 255, 255), (FW // 2, 320), "center")
-            self.text(f, "Press Z or Enter to retry", self.f_small, (220, 220, 220), (FW // 2, 360), "center")
+            self.text(f, "Press Z to retry", self.f_small, (220, 220, 220), (FW // 2, 360), "center")
         elif self.state == "clear":
             self.text(f, "ALL CLEAR!", self.f_big, (255, 235, 120), (FW // 2, 270), "center")
             self.text(f, "Score %d   Graze %d" % (self.score, self.graze), self.f_mid,
@@ -554,7 +553,7 @@ class Game:
             pygame.draw.circle(s, (90, 235, 130), (x + 10 + i * 24, 369), 8)
         if self.phase >= 0:
             self.text(s, "PHASE %d / %d" % (self.phase + 1, len(PHASES)), self.f_small, L, (x, 410))
-        tips = ["Shift: focus", "Z: shoot  X: bomb", "Graze = points!"]
+        tips = ["Shift: focus", "Z: shoot  X: bomb", "graze = points!"]
         for i, tp in enumerate(tips):
             self.text(s, tp, self.f_small, (120, 125, 170), (x, 560 + i * 22))
         self.text(s, "Bullets %d" % len(self.bullets), self.f_small, (120, 125, 170), (x, 640))
@@ -567,14 +566,10 @@ IS_WEB = sys.platform == "emscripten"   # running in the browser
 
 
 async def main(max_frames=None):
-    """Async main loop (pygbag-compatible).
-
-    Every frame ends with `await asyncio.sleep(0)`, which hands control back to the
-    browser so the page stays responsive. `max_frames` is only used by the self-test.
-    """
+    """Async main loop."""
     pygame.init()
     screen = pygame.display.set_mode((WIN_W, WIN_H))
-    pygame.display.set_caption("STAR VEIL - bullet hell")
+    pygame.display.set_caption("BULLET")
     init_sprites()
     clock = pygame.time.Clock()
     g = Game(screen)
