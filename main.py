@@ -1,21 +1,8 @@
 #!/usr/bin/env python3
 """
-STAR VEIL - a small bullet-hell shmup (single file, pygame)
-
-Run:      pip install pygame && python bullet_hell.py
-Web:      the main loop is async (asyncio), so it can be packaged with pygbag:
-          put this file in a folder as main.py, then `pygbag <folder>`
-          and open http://localhost:8000
-Controls: Arrows / WASD = move     Shift = focus (slow, shows hitbox + graze ring)
-          Z = shoot (hold)         X = bomb          Esc = quit
-
-Rules:
-  * Your hitbox is a tiny 2px dot. Get close to bullets WITHOUT touching them to GRAZE.
-  * Each graze scores points; chaining grazes quickly raises the points per graze.
-  * Every 200 grazes gives you an extra bomb (max 5).
-  * Boss has a normal attack + 3 spell cards. Beat a spell card without getting hit
-    or bombing to capture it and earn a bonus (bigger with more grazes during the card).
-  * Spell cards time out - if the timer hits zero the boss moves on without a bonus.
+http://localhost:8000
+Arrows / WASD = move     Shift = focus
+Z = shoot (hold)         X = bomb          Esc = quit
 """
 import asyncio
 import math
