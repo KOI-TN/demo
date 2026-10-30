@@ -465,7 +465,7 @@ def held_actions():
     return {name for name, group in KEY_ACTIONS.items() if any(keys[k] for k in group)}
 
 
-async def main():   
+async def main():
     pygame.init()
     screen = pygame.display.set_mode((WINDOW_W, WINDOW_H))
     pygame.display.set_caption("STAR VEIL")
